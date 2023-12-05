@@ -7,4 +7,4 @@ from src.utils import get_keyboard
 
 async def start_command(message: Message, bot: AsyncTeleBot):
     """Start command handler."""
-    await bot.send_message(message.chat.id, get_bot_settings().info, reply_markup=get_keyboard())
+    await bot.send_message(message.chat.id, get_bot_settings().info_str, reply_markup=get_keyboard())

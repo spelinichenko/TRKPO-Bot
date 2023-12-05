@@ -5,7 +5,7 @@ from telebot.types import Message
 
 from src.enums import CafeType, Cuisine, District
 from src.settings import get_bot_settings
-from src.utils import get_keyboard
+from src.utils import create_str_response, get_keyboard
 
 
 class RequestModel(BaseModel):
@@ -37,6 +37,29 @@ async def logic_message(message: Message, bot: AsyncTeleBot) -> None:
     settings = get_bot_settings()
     async with ClientSession(settings.api_url) as session:
         async with session.post("/trkpo/request", json=data.model_dump()) as resp:
+            if resp.content_type != "application/json":
+                await bot.send_message(
+                    message.chat.id,
+                    "Произошла ошибка при обработке ответа API. Попробуйте заново!",
+                    reply_markup=get_keyboard(),
+                )
             result = await resp.json()
 
-    await bot.send_message(message.chat.id, result)
+    if not isinstance(result, list):
+        await bot.send_message(
+            message.chat.id,
+            "Произошла ошибка при обработке запроса. Попробуйте заново!",
+            reply_markup=get_keyboard(),
+        )
+
+    if not result:
+        await bot.send_message(
+            message.chat.id,
+            "К сожалению, бот не смог найти подходящие под ваш запрос помещения. "
+            "Попробуйте изменить параметры запроса!",
+            reply_markup=get_keyboard(),
+        )
+
+    await bot.send_message(
+        message.chat.id, "\n\n".join([create_str_response(r) for r in result]), reply_markup=get_keyboard()
+    )
