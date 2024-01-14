@@ -1,6 +1,6 @@
 from functools import lru_cache
-from telebot import types
-
+from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardMarkup
+# from telebot import types
 
 INFO_STR = """BizSpot Finder — ваш персональный помощник в открытии успешного бизнеса в общепите.
 
@@ -50,22 +50,60 @@ HELP_STR = """Доступные функции:
 6. Возможность доставки (по возможности доставки соседних заведений)
 """
 
-REQUEST_STR = """Формат входных данных:
-1. Район (admiralteysky, vasileostrovsky, vyborg, kalininsky, kirovsky, \
-kolpinsky, krasnogvardeisky, krasnoselsky, kurortny, moscow, nevsky, \
-petrogradsky, petrodvortsovy, primorsky, pushkinsky, frunzensky, central)
-2. Тип кухни (russia, china, japan, georgia, italy, korea, mexico, uzbekistan)
-3. Бюджет на аренду помещения (месяц, руб) (400000)
-4. Тип заведения (restaurant, cafe, canteen) (cafe)
-5. Вместимость (желаемое количество человек) (10)
-"""
 
+def markup_inline_district() -> InlineKeyboardMarkup:
+    markup = InlineKeyboardMarkup()
+    markup.add(
+        InlineKeyboardButton("Адмиралтейский", callback_data="district_admiralteysky"),
+        InlineKeyboardButton("Василеостровский", callback_data="district_vasileostrovsky"),
+        InlineKeyboardButton("Выборг", callback_data="district_vyborg"),
+        InlineKeyboardButton("Калининский", callback_data="district_kalininsky"),
+        InlineKeyboardButton("Кировский", callback_data="district_kirovsky"),
+        InlineKeyboardButton("Колпинский", callback_data="district_kolpinsky"),
+        InlineKeyboardButton("Красногвардейский", callback_data="district_krasnogvardeisky"),
+        InlineKeyboardButton("Красносельский", callback_data="district_krasnoselsky"),
+        InlineKeyboardButton("Крондштат", callback_data="district_kronstadt"),
+        InlineKeyboardButton("Невский", callback_data="district_nevsky"),
+        InlineKeyboardButton("Московский", callback_data="district_moscow"),
+        InlineKeyboardButton("Петроградский", callback_data="district_petrogradsky"),
+        InlineKeyboardButton("Петродворцовый", callback_data="district_petrodvortsovy"),
+        InlineKeyboardButton("Приморский", callback_data="district_primorsky"),
+        InlineKeyboardButton("Пушкинский", callback_data="district_pushkinsky"),
+        InlineKeyboardButton("Фрунзенский", callback_data="district_frunzensky"),
+        InlineKeyboardButton("Центральный", callback_data="district_central"),
+    )
+    return markup
+
+
+def markup_inline_cuisine() -> InlineKeyboardMarkup:
+    markup = InlineKeyboardMarkup()
+    markup.add(
+        InlineKeyboardButton("Русская", callback_data="cuisine_russia"),
+        InlineKeyboardButton("Китайская", callback_data="cuisine_china"),
+        InlineKeyboardButton("Японская", callback_data="cuisine_japan"),
+        InlineKeyboardButton("Грузинская", callback_data="cuisine_georgia"),
+        InlineKeyboardButton("Итальянская", callback_data="cuisine_italy"),
+        InlineKeyboardButton("Корейская", callback_data="cuisine_korea"),
+        InlineKeyboardButton("Мексиканская", callback_data="cuisine_mexico"),
+        InlineKeyboardButton("Узбекская", callback_data="cuisine_uzbekistan")
+    )
+    return markup
+
+
+def markup_inline_cafe_type() -> InlineKeyboardMarkup:
+    markup = InlineKeyboardMarkup()
+    markup.add(
+        InlineKeyboardButton("Ресторан", callback_data="type_restaurant"),
+        InlineKeyboardButton("Кафе", callback_data="type_cafe"),
+        InlineKeyboardButton("Столовая", callback_data="type_canteen")
+    )
+    return markup
 
 @lru_cache
-def get_keyboard() -> types.ReplyKeyboardMarkup:
-    help_btn = types.InlineKeyboardButton("/help")
-    request_btn = types.InlineKeyboardButton("/request")
-    keyboard = types.ReplyKeyboardMarkup(True)
+def get_keyboard() -> ReplyKeyboardMarkup:
+    help_btn = InlineKeyboardButton("/help")
+    request_btn = InlineKeyboardButton("/request")
+    keyboard = ReplyKeyboardMarkup(True)
     keyboard.row(help_btn, request_btn)
     return keyboard
 
