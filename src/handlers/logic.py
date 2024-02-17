@@ -18,7 +18,7 @@ class RequestModel(BaseModel):
     visitor_capacity: int
 
 
-async def logic_message(message: Message, bot: AsyncTeleBot) -> list:
+async def logic_message(message: Message, bot: AsyncTeleBot) -> None:
     """Logic message handler."""
     try:
         message_str: str = message.text
@@ -78,5 +78,3 @@ async def logic_message(message: Message, bot: AsyncTeleBot) -> list:
         message.chat.id, "\n\n".join([create_str_response(r) for r in result]),
         reply_markup=get_keyboard()
     )
-
-    return result
