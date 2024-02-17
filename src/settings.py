@@ -1,9 +1,11 @@
 import os
 from functools import lru_cache
+from typing import Dict
 
 from pydantic_settings import BaseSettings
+from telebot.async_telebot import AsyncTeleBot
 
-from src.utils import INFO_STR, HELP_STR, REQUEST_STR
+from src.utils import INFO_STR, HELP_STR
 
 
 class BotSettings(BaseSettings):
@@ -17,9 +19,12 @@ class BotSettings(BaseSettings):
 
     help_str: str = HELP_STR
 
-    request_str: str = REQUEST_STR
-
 
 @lru_cache
 def get_bot_settings():
     return BotSettings()
+
+
+settings = get_bot_settings()
+bot = AsyncTeleBot(settings.token)
+results: Dict = {}
