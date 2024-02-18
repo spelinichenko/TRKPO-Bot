@@ -49,6 +49,7 @@ INFO_STR = """BizSpot Finder — ваш персональный помощни�
 Год создания - 2023
 """
 
+
 def markup_inline_district() -> InlineKeyboardMarkup:
     markup = InlineKeyboardMarkup()
     markup.add(
