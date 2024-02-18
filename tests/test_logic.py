@@ -1,13 +1,14 @@
 from itertools import product
+from unittest.mock import AsyncMock
 
 import pytest
-from telebot import apihelper, TeleBot
+from telebot import TeleBot, apihelper
+from telebot.types import CallbackQuery, Message
 from telebot.util import CustomRequestResponse
-from telebot.types import Message, CallbackQuery
 
 from src.enums import CafeType, Cuisine, District
-from src.handlers.logic import logic_message, RequestModel
-from src.handlers.request import request_message_handler, callback_handler
+from src.handlers.logic import RequestModel, logic_message
+from src.handlers.request import callback_handler, request_message_handler
 
 
 def custom_sender_logic(method, url, **kwargs):
@@ -82,6 +83,17 @@ async def test_logic_message(test_input, expected):
 
     with pytest.raises(Exception):
         await logic_message(message, tb)
+
+async def test_logic_called():
+    message = Message(
+        message_id=0, from_user=0, date="", chat=MockChat(), content_type="text", options=[], json_string=""
+    )
+    message.text = "1. 100000\n2. 30\n3. central\n4. russia\n5. cafe"
+    apihelper.CUSTOM_REQUEST_SENDER = custom_sender_logic
+
+    sample_mock = AsyncMock()
+    await logic_message(message, sample_mock)
+    sample_mock.send_message.assert_awaited()
 
 
 @pytest.mark.parametrize("test_str, test_dict", generate_test_cases_positive())
