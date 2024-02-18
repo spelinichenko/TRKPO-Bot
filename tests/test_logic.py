@@ -64,7 +64,7 @@ def generate_test_cases_negative():
             "cuisine": cuisine,
             "budget": budget + "hhh",
             "cafe_type": cafe_type,
-            "visitor_capacity": vis_cap,
+            "visitor_capacity": "-200",
         }
         test_cases.append((test_case_str, test_case_dict))
 
