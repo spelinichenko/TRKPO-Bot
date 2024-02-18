@@ -3,6 +3,7 @@ from telebot import TeleBot, apihelper
 from telebot.util import CustomRequestResponse
 
 from src.handlers.help import help_command
+from src.handlers.start import start_command
 from src.settings import get_bot_settings
 from src.utils import HELP_STR, INFO_STR, get_keyboard
 from unittest.mock import AsyncMock, patch, Mock
@@ -21,9 +22,9 @@ async def test_help_command():
         mock_get_bot_settings.return_value.help_str = HELP_STR
         mock_get_keyboard.return_value = get_keyboard()
         # Вызываем тестируемую функцию
-        await help_command(message, bot)
+        await start_command(message, bot)
 
         # Проверяем, что функция send_message была вызвана с ожидаемыми параметрами
         bot.send_message.assert_called_once_with(123456789,
-                                                 HELP_STR,
+                                                 INFO_STR,
                                                  reply_markup=get_keyboard())
