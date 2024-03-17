@@ -7,7 +7,7 @@ from telebot.async_telebot import AsyncTeleBot
 from telebot.types import Message
 
 from src.enums import CafeType, Cuisine, District
-from src.settings import BotSettings, get_bot_settings, results
+from src.settings import BotSettings, bot, results, get_bot_settings
 from src.utils import create_str_response, get_keyboard
 
 
@@ -21,11 +21,11 @@ class RequestModel(BaseModel):
 
 async def logic_message(message: Message, bot: AsyncTeleBot) -> None:
     """Logic message handler."""
-    try:
-        message_str: str = message.text
-    except Exception:
+    if message.content_type != "text":
         await bot.send_message(message.chat.id, "Сообщение должно быть в текстовом виде!", reply_markup=get_keyboard())
         return
+    else:
+        message_str: str = message.text
     try:
         lines = message_str.split("\n")
         parts = [re.sub(r"^\d+\.\s*", "", s) for s in lines]
@@ -81,3 +81,23 @@ async def check_response(result: Any, bot: AsyncTeleBot, message: Message) -> An
     await bot.send_message(
         message.chat.id, "\n\n".join([create_str_response(r) for r in result]), reply_markup=get_keyboard()
     )
+
+
+async def check_request(result: Any, bot: AsyncTeleBot, message: Message) -> Any:
+    if not isinstance(result, list):
+        await bot.send_message(
+            message.chat.id,
+            "Сообщение должно быть в текстовом виде!",
+            reply_markup=get_keyboard(),
+        )
+        return
+
+    if not result:
+        await bot.send_message(
+            message.chat.id,
+            "Ошибка парсинга полей сообщения. Проверьте введенные данные!",
+            reply_markup=get_keyboard(),
+        )
+        return
+
+    await bot.send_message(message.chat.id, "Ваш запрос:\n" + results.__str__())
