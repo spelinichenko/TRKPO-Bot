@@ -22,7 +22,7 @@ jobs:
 
       - name: Run integration tests
         run: |
-          python3 -m pytest --cov=src tests/integration/
+           pytest --with-integration tests/integration
       
       - name: Checkout
         uses: actions/checkout@v4
