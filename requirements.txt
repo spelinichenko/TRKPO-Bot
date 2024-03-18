@@ -7,7 +7,7 @@ pytest==7.1.2
 pytest-asyncio==0.20.2
 pytest-cov==4.0.0
 pytest-mock
-
+pytest-integration
 flake8==6.0.0
 flake8-black==0.3.6
 flake8-bugbear==23.2.13
