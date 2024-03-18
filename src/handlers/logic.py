@@ -21,36 +21,45 @@ class RequestModel(BaseModel):
 
 async def logic_message(message: Message, bot: AsyncTeleBot) -> None:
     """Logic message handler."""
-    if message.content_type != "text":
-        await bot.send_message(message.chat.id, "Сообщение должно быть в текстовом виде!", reply_markup=get_keyboard())
-        return
-    else:
-        message_str: str = message.text
-    try:
-        lines = message_str.split("\n")
-        parts = [re.sub(r"^\d+\.\s*", "", s) for s in lines]
-        results["budget"] = int(parts[0])
-        results["visitor_capacity"] = int(parts[1])
-        await bot.send_message(message.chat.id, "Ваш запрос:\n" + results.__str__())
-        fields = RequestModel.model_fields.keys()
-        fields_data = [value for _, value in results.items()]
-        data = RequestModel(**dict(zip(fields, fields_data)))
-
-    except Exception:
-        await bot.send_message(
-            message.chat.id, "Ошибка парсинга полей сообщения. Проверьте введенные данные!", reply_markup=get_keyboard()
-        )
-        return
-
+    data = parse_request(message, bot)
     settings = get_bot_settings()
 
     result = await process_request(settings, data, bot, message)
     await check_response(result, bot, message)
 
 
-async def process_request(settings: BotSettings, data: RequestModel, bot: AsyncTeleBot, message: Message) -> Any:
+async def parse_request(message: Message, bot: AsyncTeleBot) -> RequestModel:
+    if message.content_type != "text":
+        await bot.send_message(message.chat.id,
+                               "Сообщение должно быть в текстовом виде!",
+                               reply_markup=get_keyboard())
+    else:
+        message_str = message.text
+        try:
+            lines = message_str.split("\n")
+            parts = [re.sub(r"^\d+\.\s*", "", s) for s in lines]
+            results["budget"] = int(parts[0])
+            results["visitor_capacity"] = int(parts[1])
+            await bot.send_message(message.chat.id,
+                                   "Ваш запрос:\n" + results.__str__())
+            fields = RequestModel.model_fields.keys()
+            fields_data = [value for _, value in results.items()]
+            data = RequestModel(**dict(zip(fields, fields_data)))
+            return data
+
+        except Exception:
+            await bot.send_message(
+                message.chat.id,
+                "Ошибка парсинга полей сообщения. Проверьте введенные данные!",
+                reply_markup=get_keyboard()
+            )
+
+
+async def process_request(settings: BotSettings, data: RequestModel,
+                          bot: AsyncTeleBot, message: Message) -> Any:
     async with ClientSession(settings.api_url) as session:
-        async with session.post("/trkpo/request", json=data.model_dump()) as resp:
+        async with session.post("/trkpo/request",
+                                json=data.model_dump()) as resp:
             if resp.content_type != "application/json":
                 await bot.send_message(
                     message.chat.id,
@@ -60,7 +69,8 @@ async def process_request(settings: BotSettings, data: RequestModel, bot: AsyncT
             return await resp.json()
 
 
-async def check_response(result: Any, bot: AsyncTeleBot, message: Message) -> Any:
+async def check_response(result: Any, bot: AsyncTeleBot,
+                         message: Message) -> Any:
     if not isinstance(result, list):
         await bot.send_message(
             message.chat.id,
@@ -79,11 +89,13 @@ async def check_response(result: Any, bot: AsyncTeleBot, message: Message) -> An
         return
 
     await bot.send_message(
-        message.chat.id, "\n\n".join([create_str_response(r) for r in result]), reply_markup=get_keyboard()
+        message.chat.id, "\n\n".join([create_str_response(r) for r in result]),
+        reply_markup=get_keyboard()
     )
 
 
-async def check_request(result: Any, bot: AsyncTeleBot, message: Message) -> Any:
+async def check_request(result: Any, bot: AsyncTeleBot,
+                        message: Message) -> Any:
     if not isinstance(result, list):
         await bot.send_message(
             message.chat.id,
@@ -100,4 +112,5 @@ async def check_request(result: Any, bot: AsyncTeleBot, message: Message) -> Any
         )
         return
 
-    await bot.send_message(message.chat.id, "Ваш запрос:\n" + results.__str__())
+    await bot.send_message(message.chat.id,
+                           "Ваш запрос:\n" + results.__str__())
