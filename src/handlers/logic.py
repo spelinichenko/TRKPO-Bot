@@ -18,7 +18,6 @@ class RequestModel(BaseModel):
     budget: int
     visitor_capacity: int
 
-
 async def logic_message(message: Message, bot: AsyncTeleBot) -> None:
     """Logic message handler."""
     data = await parse_request(message, bot)

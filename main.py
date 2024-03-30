@@ -9,6 +9,6 @@ bot.register_message_handler(start_command, commands=["start"], pass_bot=True)
 bot.register_message_handler(help_command, commands=["help"], pass_bot=True)
 bot.register_message_handler(request_message_handler, commands=["request"],
                              pass_bot=True)
-bot.register_message_handler(logic_message, pass_bot=True)
+bot.register_message_handler(logic_message, pass_bot=True, content_types=['text', 'document'])
 
 asyncio.run(bot.polling())
