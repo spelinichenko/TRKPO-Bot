@@ -21,7 +21,7 @@ class RequestModel(BaseModel):
 
 async def logic_message(message: Message, bot: AsyncTeleBot) -> None:
     """Logic message handler."""
-    data = parse_request(message, bot)
+    data = await parse_request(message, bot)
     settings = get_bot_settings()
 
     result = await process_request(settings, data, bot, message)
